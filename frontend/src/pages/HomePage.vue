@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="end">
       <v-btn v-if="users.length" @click="openCreateModal" color="success">
-        Criar Usuário
+        Create User
       </v-btn>
     </v-row>
 

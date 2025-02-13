@@ -26,10 +26,13 @@ import { ref, computed, defineProps, defineEmits, watch } from "vue";
 const props = defineProps({ user: Object });
 const emit = defineEmits(["close", "save"]);
 
-const rolesOptions = ["admin", "manager", "tester", "active"];
+const dialog = ref(true); // Definir dialog como propriedade reativa
+
+const rolesOptions = ["Admin", "Manager", "Tester"];
 
 const form = ref({
   username: "",
+  password: "",
   roles: [],
   active: true,
   timezone: ""
@@ -42,6 +45,7 @@ watch(
   (newUser) => {
     if (newUser) {
       form.value = { ...newUser };
+      form.value.password = "";  // Clear password field when editing
     }
   },
   { immediate: true }
