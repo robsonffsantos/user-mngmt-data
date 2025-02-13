@@ -2,17 +2,11 @@
   <v-container>
     <v-row justify="end">
       <v-btn v-if="users.length" @click="openCreateModal" color="success">
-        Create User
+        Criar Usuário
       </v-btn>
     </v-row>
 
-    <v-data-table
-      v-if="users.length"
-      :headers="headers"
-      :items="users"
-      :items-per-page="5"
-      class="mt-4"
-    >
+    <v-data-table v-if="users.length" :headers="headers" :items="formattedUsers" class="mt-4">
       <template v-slot:[`item.username`]="{ item }">
         <router-link :to="`/user/${item.id}`">{{ item.username }}</router-link>
       </template>
@@ -29,9 +23,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import UserModal from "@/components/UserModal.vue";
-import "vuetify/styles"; // Ensure you are using css-loader
 
 const users = ref([]);
 const modalOpen = ref(false);
@@ -55,6 +48,19 @@ const fetchUsers = async () => {
     console.error("Erro ao buscar usuários:", error);
   }
 };
+
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleString();
+};
+
+const formattedUsers = computed(() =>
+  users.value.map(user => ({
+    ...user,
+    updated_at: formatTimestamp(user.updated_at),
+    created_at: formatTimestamp(user.created_at)
+  }))
+);
 
 const openCreateModal = () => {
   selectedUser.value = null;
