@@ -1,9 +1,13 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 import datetime
 
 app = Flask(__name__)
+
+# Habilitar CORS para permitir requisições do frontend
+CORS(app, origins=["http://localhost:8080"])
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client.prodDatabase
