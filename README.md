@@ -136,3 +136,8 @@ The application should now be running on [http://localhost:8080](http://localhos
 - **Edit User**: Click the pencil icon next to a user to edit their information.
 - **Delete User**: Click the trash icon next to a user to delete them.
 - **View User**: Click on a user's username to view their detailed information.
+
+## Contact
+If you have any questions or suggestions, feel free to get in touch:
+
+LinkedIn: [Robson Fernando](https://www.linkedin.com/in/robsonffdossantos)
