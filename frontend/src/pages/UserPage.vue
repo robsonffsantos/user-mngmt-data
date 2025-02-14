@@ -6,8 +6,8 @@
         <p><strong>Roles:</strong> {{ user.roles.join(", ") }}</p>
         <p><strong>Timezone:</strong> {{ user.timezone }}</p>
         <p><strong>Active?</strong> {{ user.active ? "Yes" : "No" }}</p>
-        <p><strong>Created at:</strong> {{ user.created_at }}</p>
-        <p><strong>Last Update:</strong> {{ user.updated_at }}</p>
+        <p><strong>Created at:</strong> {{ formatTimestamp(user.created_at) }}</p>
+        <p><strong>Last Update:</strong> {{ formatTimestamp(user.updated_at) }}</p>
       </v-card-text>
 
       <v-card-actions>
@@ -39,6 +39,11 @@ const fetchUser = async () => {
   } catch (error) {
     console.error("Erro ao carregar usuário:", error);
   }
+};
+
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp * 1000); // converter de segundos para milissegundos
+  return date.toLocaleString(); // formato legível
 };
 
 const confirmDelete = async () => {
