@@ -5,14 +5,14 @@
       <v-card-text>
         <p><strong>Roles:</strong> {{ user.roles.join(", ") }}</p>
         <p><strong>Timezone:</strong> {{ user.timezone }}</p>
-        <p><strong>Ativo?</strong> {{ user.active ? "Sim" : "Não" }}</p>
-        <p><strong>Criado em:</strong> {{ user.created_at }}</p>
-        <p><strong>Última atualização:</strong> {{ user.updated_at }}</p>
+        <p><strong>Active?</strong> {{ user.active ? "Yes" : "No" }}</p>
+        <p><strong>Created at:</strong> {{ user.created_at }}</p>
+        <p><strong>Last Update:</strong> {{ user.updated_at }}</p>
       </v-card-text>
 
       <v-card-actions>
-        <v-btn @click="openEditModal" color="primary">Editar</v-btn>
-        <v-btn @click="confirmDelete" color="red">Deletar</v-btn>
+        <v-btn @click="openEditModal" color="primary">Edit</v-btn>
+        <v-btn @click="confirmDelete" color="red">Delete</v-btn>
         <v-btn to="/" color="grey">Voltar</v-btn>
       </v-card-actions>
     </v-card>
