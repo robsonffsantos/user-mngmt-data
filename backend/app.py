@@ -40,7 +40,6 @@ def create_user():
     data = request.json
     new_user = {
         "username": data["username"],
-        "password": data["password"],
         "roles": data["roles"],
         "preferences": {"timezone": data["timezone"]},
         "active": data.get("active", True),

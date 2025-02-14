@@ -3,14 +3,14 @@ import { fetchUsers, fetchUserById, createUser, updateUser, deleteUser } from "@
 
 const rolesOptions = ["admin", "manager", "tester"];
 const timezoneOptions = [
-  "Pacific/Midway", "Pacific/Pago_Pago", "Pacific/Honolulu", "America/Anchorage", 
-  "America/Los_Angeles", "America/Tijuana", "America/Denver", "America/Phoenix",
-  "America/Chicago", "America/Regina", "America/Mexico_City", "America/Guatemala",
-  "America/New_York", "America/Bogota", "America/Lima", "America/Caracas",
-  "America/Halifax", "America/La_Paz", "America/Santiago", "America/St_Johns",
-  "America/Sao_Paulo", "America/Argentina/Buenos_Aires", "America/Guyana",
-  "America/Montevideo", "Atlantic/South_Georgia", "Atlantic/Azores",
-  "Atlantic/Cape_Verde", "Europe/Dublin", "Europe/London", "Europe/Lisbon",
+  "Pacific/Midway", "Pacific/Pago Pago", "Pacific/Honolulu", "America/Anchorage", 
+  "America/Los Angeles", "America/Tijuana", "America/Denver", "America/Phoenix",
+  "America/Chicago", "America/Regina", "America/Mexico City", "America/Guatemala",
+  "America/New York", "America/Bogota", "America/Lima", "America/Caracas",
+  "America/Halifax", "America/La_Paz", "America/Santiago", "America/St. Johns",
+  "America/Sao Paulo", "America/Argentina/Buenos Aires", "America/Guyana",
+  "America/Montevideo", "Atlantic/South Georgia", "Atlantic/Azores",
+  "Atlantic/Cape Verde", "Europe/Dublin", "Europe/London", "Europe/Lisbon",
   "Europe/Amsterdam", "Europe/Belgrade", "Europe/Berlin", "Europe/Bratislava",
   "Europe/Brussels", "Europe/Budapest", "Europe/Copenhagen", "Europe/Ljubljana",
   "Europe/Madrid", "Europe/Paris", "Europe/Prague", "Europe/Rome", "Europe/Sarajevo",
@@ -23,10 +23,10 @@ const timezoneOptions = [
   "Asia/Kolkata", "Asia/Kathmandu", "Asia/Almaty", "Asia/Dhaka",
   "Asia/Novosibirsk", "Asia/Bangkok", "Asia/Jakarta", "Asia/Krasnoyarsk",
   "Asia/Shanghai", "Asia/Chongqing", "Asia/Hong_Kong", "Asia/Irkutsk",
-  "Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Taipei", "Australia/Perth",
+  "Asia/Kuala Lumpur", "Asia/Singapore", "Asia/Taipei", "Australia/Perth",
   "Asia/Seoul", "Asia/Tokyo", "Asia/Yakutsk", "Australia/Adelaide",
   "Australia/Darwin", "Australia/Brisbane", "Australia/Hobart", "Australia/Sydney",
-  "Pacific/Guam", "Pacific/Port_Moresby", "Asia/Vladivostok", "Asia/Magadan",
+  "Pacific/Guam", "Pacific/Port Moresby", "Asia/Vladivostok", "Asia/Magadan",
   "Pacific/Fiji", "Pacific/Auckland"
 ];
 

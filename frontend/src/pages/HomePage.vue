@@ -13,7 +13,7 @@
       class="mt-4"
     >
       <template v-slot:[`item.username`]="{ item }">
-        <router-link :to="`/user/${item.id}`">{{ item.username }}</router-link>
+        <router-link :to="`/user/${item.id}`" class="custom-link">{{ item.username }}</router-link>
       </template>
 
       <template v-slot:[`item.roles`]="{ item }">
@@ -133,5 +133,15 @@ onMounted(loadUsers);
 .actions-container {
   display: flex;
   gap: 8px;
+}
+
+.custom-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.custom-link:hover {
+  text-decoration: none;
+  color: blue;
 }
 </style>
