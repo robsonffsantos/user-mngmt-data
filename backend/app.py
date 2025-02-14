@@ -6,7 +6,6 @@ import datetime
 
 app = Flask(__name__)
 
-# Habilitar CORS para permitir requisições do frontend
 CORS(app, origins=["http://localhost:8080"])
 
 client = MongoClient("mongodb://localhost:27017/")

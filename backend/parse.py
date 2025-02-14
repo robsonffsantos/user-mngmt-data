@@ -24,4 +24,5 @@ for user in users_data:
     users.append(new_user.__dict__)
 
 users_collection.insert_many(users)
-print("Dados importados com sucesso!")
+print("Data imported successfully!")
+
