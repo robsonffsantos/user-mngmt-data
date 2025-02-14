@@ -3,7 +3,7 @@
     <v-card v-if="user">
       <v-card-title>{{ user.username }}</v-card-title>
       <v-card-text>
-        <p><strong>Roles:</strong> {{ user.roles.join(", ") }}</p>
+        <p><strong>Roles:</strong> {{ formattedRoles }}</p>
         <p><strong>Timezone:</strong> {{ user.timezone }}</p>
         <p><strong>Active?</strong> {{ user.active ? "Yes" : "No" }}</p>
         <p><strong>Created at:</strong> {{ formatTimestamp(user.created_at) }}</p>
@@ -13,42 +13,33 @@
       <v-card-actions>
         <v-btn @click="openEditModal" color="primary">Edit</v-btn>
         <v-btn @click="confirmDelete" color="red">Delete</v-btn>
-        <v-btn to="/" color="grey">Voltar</v-btn>
+        <v-btn to="/" color="grey">Back</v-btn>
       </v-card-actions>
     </v-card>
 
-    <!-- Modal para Edição -->
     <UserModal v-if="modalOpen" :user="user" @close="modalOpen = false" @save="fetchUser" />
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useStore } from 'vuex';
 import UserModal from "@/components/UserModal.vue";
 
+const store = useStore();
 const route = useRoute();
 const router = useRouter();
-const user = ref(null);
+const user = computed(() => store.state.selectedUser);
 const modalOpen = ref(false);
 
 const fetchUser = async () => {
-  try {
-    const response = await fetch(`http://127.0.0.1:5000/users/${route.params.id}`);
-    user.value = await response.json();
-  } catch (error) {
-    console.error("Erro ao carregar usuário:", error);
-  }
-};
-
-const formatTimestamp = (timestamp) => {
-  const date = new Date(timestamp * 1000); // converter de segundos para milissegundos
-  return date.toLocaleString(); // formato legível
+  await store.dispatch('fetchUserById', route.params.id);
 };
 
 const confirmDelete = async () => {
-  if (confirm("Tem certeza que deseja excluir este usuário?")) {
-    await fetch(`http://127.0.0.1:5000/users/${route.params.id}`, { method: "DELETE" });
+  if (confirm("Are you sure you want to delete this user?")) {
+    await store.dispatch('deleteUserById', route.params.id);
     router.push("/");
   }
 };
@@ -56,6 +47,17 @@ const confirmDelete = async () => {
 const openEditModal = () => {
   modalOpen.value = true;
 };
+
+const formatTimestamp = store.getters.formatTimestamp;
+
+const formattedRoles = computed(() => {
+  if (!user.value || !Array.isArray(user.value.roles)) return '';
+  const allowedRoles = ["admin", "manager", "tester"];
+  return user.value.roles
+    .filter(role => allowedRoles.includes(role.toLowerCase()))
+    .map(role => role.charAt(0).toUpperCase() + role.slice(1))
+    .join(", ");
+});
 
 onMounted(fetchUser);
 </script>

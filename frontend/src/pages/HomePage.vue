@@ -1,13 +1,13 @@
 <template>
   <v-container>
     <v-row justify="end">
-      <v-btn v-if="users.length" @click="openCreateModal" color="success">
+      <v-btn v-if="users && users.length > 0" @click="openCreateModal" color="success">
         Create User
       </v-btn>
     </v-row>
 
     <v-data-table
-      v-if="users.length"
+      v-if="users && users.length > 0"
       :headers="headers"
       :items="formattedUsers"
       class="mt-4"
@@ -26,13 +26,12 @@
 
       <template v-slot:[`item.actions`]="{ item }">
         <div class="actions-container">
-          <v-icon @click="openEditModal(item)" color="blue">mdi-pencil</v-icon>
+          <v-icon @click="openEditModal(item.id)" color="blue">mdi-pencil</v-icon>
           <v-icon @click="confirmDelete(item.id)" color="red" class="ml-2">mdi-delete</v-icon>
         </div>
       </template>
     </v-data-table>
 
-    <!-- Modal para Criar e Editar Usuários -->
     <UserModal
       v-if="modalOpen"
       :user="selectedUser"
@@ -44,12 +43,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useStore } from 'vuex';
 import UserModal from "@/components/UserModal.vue";
-import { fetchUsers, deleteUser } from "@/services/userService";
 
-const users = ref([]);
+const store = useStore();
 const modalOpen = ref(false);
-const selectedUser = ref(null);
 
 const headers = [
   { title: "Username", key: "username", width: "15%" },
@@ -62,7 +60,9 @@ const headers = [
 ];
 
 const loadUsers = async () => {
-  users.value = await fetchUsers();
+  if (store) {
+    await store.dispatch('fetchUsers');
+  }
 };
 
 const formatTimestamp = (timestamp) => {
@@ -72,16 +72,15 @@ const formatTimestamp = (timestamp) => {
 
 const formatRoles = (roles) => {
   if (!Array.isArray(roles) || roles.length === 0) {
-    return "User"; // Retorna "User" se não houver roles
+    return "User";
   }
 
   const allowedRoles = ["admin", "manager", "tester"];
-  
   const filteredRoles = roles
-    .filter(role => allowedRoles.includes(role.toLowerCase())) // Filtra apenas os permitidos
-    .map(role => role.charAt(0).toUpperCase() + role.slice(1)); // Capitaliza
+    .filter(role => allowedRoles.includes(role.toLowerCase()))
+    .map(role => role.charAt(0).toUpperCase() + role.slice(1));
 
-  return filteredRoles.length ? filteredRoles.join(", ") : "User"; // Se não houver roles válidos, retorna "User"
+  return filteredRoles.length ? filteredRoles.join(", ") : "User";
 };
 
 const formatTimezone = (timezone) => {
@@ -89,7 +88,7 @@ const formatTimezone = (timezone) => {
 };
 
 const formattedUsers = computed(() =>
-  users.value.map(user => ({
+  store.state.users.map(user => ({
     ...user,
     updated_at: formatTimestamp(user.updated_at),
     created_at: formatTimestamp(user.created_at),
@@ -99,19 +98,23 @@ const formattedUsers = computed(() =>
 );
 
 const openCreateModal = () => {
-  selectedUser.value = null;
+  store.commit('setSelectedUser', null);
   modalOpen.value = true;
 };
 
-const openEditModal = (user) => {
-  selectedUser.value = { ...user };
-  modalOpen.value = true;
+const openEditModal = async (id) => {
+  if (store) {
+    await store.dispatch('fetchUserById', id);
+    modalOpen.value = true;
+  }
 };
 
 const confirmDelete = async (id) => {
-  if (confirm("Tem certeza que deseja excluir este usuário?")) {
-    await deleteUser(id);
-    loadUsers();
+  if (confirm("Are you sure you want to delete this user?")) {
+    if (store) {
+      await store.dispatch('deleteUser', id);
+      loadUsers();
+    }
   }
 };
 
@@ -120,12 +123,15 @@ const handleSave = () => {
   loadUsers();
 };
 
+const users = computed(() => store.state.users);
+const selectedUser = computed(() => store.state.selectedUser);
+
 onMounted(loadUsers);
 </script>
 
 <style scoped>
 .actions-container {
   display: flex;
-  gap: 8px; /* Espaço entre os ícones */
+  gap: 8px;
 }
 </style>

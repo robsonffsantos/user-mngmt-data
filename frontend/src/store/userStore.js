@@ -1,9 +1,41 @@
 import { createStore } from 'vuex';
+import { fetchUsers, fetchUserById, createUser, updateUser, deleteUser } from "@/services/userService";
+
+const rolesOptions = ["admin", "manager", "tester"];
+const timezoneOptions = [
+  "Pacific/Midway", "Pacific/Pago_Pago", "Pacific/Honolulu", "America/Anchorage", 
+  "America/Los_Angeles", "America/Tijuana", "America/Denver", "America/Phoenix",
+  "America/Chicago", "America/Regina", "America/Mexico_City", "America/Guatemala",
+  "America/New_York", "America/Bogota", "America/Lima", "America/Caracas",
+  "America/Halifax", "America/La_Paz", "America/Santiago", "America/St_Johns",
+  "America/Sao_Paulo", "America/Argentina/Buenos_Aires", "America/Guyana",
+  "America/Montevideo", "Atlantic/South_Georgia", "Atlantic/Azores",
+  "Atlantic/Cape_Verde", "Europe/Dublin", "Europe/London", "Europe/Lisbon",
+  "Europe/Amsterdam", "Europe/Belgrade", "Europe/Berlin", "Europe/Bratislava",
+  "Europe/Brussels", "Europe/Budapest", "Europe/Copenhagen", "Europe/Ljubljana",
+  "Europe/Madrid", "Europe/Paris", "Europe/Prague", "Europe/Rome", "Europe/Sarajevo",
+  "Europe/Skopje", "Europe/Stockholm", "Europe/Vienna", "Europe/Warsaw",
+  "Europe/Zagreb", "Europe/Athens", "Europe/Bucharest", "Africa/Cairo",
+  "Africa/Harare", "Europe/Helsinki", "Europe/Kiev", "Europe/Riga",
+  "Europe/Sofia", "Europe/Tallinn", "Europe/Vilnius", "Europe/Istanbul",
+  "Asia/Jerusalem", "Asia/Baghdad", "Asia/Kuwait", "Asia/Riyadh", "Asia/Tehran",
+  "Africa/Nairobi", "Asia/Kabul", "Asia/Karachi", "Asia/Yekaterinburg",
+  "Asia/Kolkata", "Asia/Kathmandu", "Asia/Almaty", "Asia/Dhaka",
+  "Asia/Novosibirsk", "Asia/Bangkok", "Asia/Jakarta", "Asia/Krasnoyarsk",
+  "Asia/Shanghai", "Asia/Chongqing", "Asia/Hong_Kong", "Asia/Irkutsk",
+  "Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Taipei", "Australia/Perth",
+  "Asia/Seoul", "Asia/Tokyo", "Asia/Yakutsk", "Australia/Adelaide",
+  "Australia/Darwin", "Australia/Brisbane", "Australia/Hobart", "Australia/Sydney",
+  "Pacific/Guam", "Pacific/Port_Moresby", "Asia/Vladivostok", "Asia/Magadan",
+  "Pacific/Fiji", "Pacific/Auckland"
+];
 
 export const store = createStore({
   state: {
     users: [],
     selectedUser: null,
+    rolesOptions,
+    timezoneOptions,
   },
   mutations: {
     setUsers(state, users) {
@@ -15,14 +47,34 @@ export const store = createStore({
   },
   actions: {
     async fetchUsers({ commit }) {
-      const response = await fetch('http://localhost:5000/api/users');
-      const data = await response.json();
-      commit('setUsers', data);
+      const users = await fetchUsers();
+      commit('setUsers', users);
     },
     async fetchUserById({ commit }, userId) {
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`);
-      const data = await response.json();
-      commit('setSelectedUser', data);
+      const user = await fetchUserById(userId);
+      commit('setSelectedUser', user);
+    },
+    async createUser({ dispatch }, userData) {
+      await createUser(userData);
+      dispatch('fetchUsers');
+    },
+    async updateUser({ dispatch }, { id, userData }) {
+      await updateUser(id, userData);
+      dispatch('fetchUsers');
+    },
+    async deleteUser({ dispatch }, userId) {
+      await deleteUser(userId);
+      dispatch('fetchUsers');
+    },
+    async deleteUserById({ dispatch }, userId) {
+      await deleteUser(userId);
+      dispatch('fetchUsers');
+    }
+  },
+  getters: {
+    formatTimestamp: () => (timestamp) => {
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleString();
     },
   },
 });

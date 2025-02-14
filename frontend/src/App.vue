@@ -1,5 +1,4 @@
 <script setup>
-import { RouterView } from 'vue-router'
 import { ref } from 'vue'
 import { useTheme } from 'vuetify'
 
@@ -31,5 +30,5 @@ const toggleDarkMode = () => {
 </template>
 
 <style>
-/* Adicione estilos globais aqui se necessário */
+
 </style>

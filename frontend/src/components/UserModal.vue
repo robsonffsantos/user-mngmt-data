@@ -21,14 +21,14 @@
           </v-col>
         </v-row>
 
-        <v-switch v-model="form.active" label="Ativo?"></v-switch>
+        <v-switch v-model="form.active" label="Active?"></v-switch>
 
-        <v-select v-model="form.timezone" label="Fuso Horário" :items="timezoneOptions"></v-select>
+        <v-select v-model="form.timezone" label="Timezone" :items="timezoneOptions"></v-select>
       </v-card-text>
 
       <v-card-actions>
-        <v-btn @click="$emit('close')" color="grey">Cancelar</v-btn>
-        <v-btn @click="confirmSave" color="primary">Salvar</v-btn>
+        <v-btn @click="$emit('close')" color="grey">Cancel</v-btn>
+        <v-btn @click="confirmSave" color="primary">Save</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -36,42 +36,16 @@
 
 <script setup>
 import { ref, computed, defineProps, defineEmits, watch } from "vue";
-import { createUser, updateUser } from "../services/userService.js";
+import { useStore } from 'vuex';
 
+const store = useStore();
 const props = defineProps({ user: Object });
 const emit = defineEmits(["close", "save"]);
 
 const dialog = ref(true);
 
-const rolesOptions = ["admin", "manager", "tester"];
-
-const timezoneOptions = [
-  "Pacific/Midway", "Pacific/Pago_Pago", "Pacific/Honolulu", "America/Anchorage", 
-  "America/Los_Angeles", "America/Tijuana", "America/Denver", "America/Phoenix",
-  "America/Chicago", "America/Regina", "America/Mexico_City", "America/Guatemala",
-  "America/New_York", "America/Bogota", "America/Lima", "America/Caracas",
-  "America/Halifax", "America/La_Paz", "America/Santiago", "America/St_Johns",
-  "America/Sao_Paulo", "America/Argentina/Buenos_Aires", "America/Guyana",
-  "America/Montevideo", "Atlantic/South_Georgia", "Atlantic/Azores",
-  "Atlantic/Cape_Verde", "Europe/Dublin", "Europe/London", "Europe/Lisbon",
-  "Europe/Amsterdam", "Europe/Belgrade", "Europe/Berlin", "Europe/Bratislava",
-  "Europe/Brussels", "Europe/Budapest", "Europe/Copenhagen", "Europe/Ljubljana",
-  "Europe/Madrid", "Europe/Paris", "Europe/Prague", "Europe/Rome", "Europe/Sarajevo",
-  "Europe/Skopje", "Europe/Stockholm", "Europe/Vienna", "Europe/Warsaw",
-  "Europe/Zagreb", "Europe/Athens", "Europe/Bucharest", "Africa/Cairo",
-  "Africa/Harare", "Europe/Helsinki", "Europe/Kiev", "Europe/Riga",
-  "Europe/Sofia", "Europe/Tallinn", "Europe/Vilnius", "Europe/Istanbul",
-  "Asia/Jerusalem", "Asia/Baghdad", "Asia/Kuwait", "Asia/Riyadh", "Asia/Tehran",
-  "Africa/Nairobi", "Asia/Kabul", "Asia/Karachi", "Asia/Yekaterinburg",
-  "Asia/Kolkata", "Asia/Kathmandu", "Asia/Almaty", "Asia/Dhaka",
-  "Asia/Novosibirsk", "Asia/Bangkok", "Asia/Jakarta", "Asia/Krasnoyarsk",
-  "Asia/Shanghai", "Asia/Chongqing", "Asia/Hong_Kong", "Asia/Irkutsk",
-  "Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Taipei", "Australia/Perth",
-  "Asia/Seoul", "Asia/Tokyo", "Asia/Yakutsk", "Australia/Adelaide",
-  "Australia/Darwin", "Australia/Brisbane", "Australia/Hobart", "Australia/Sydney",
-  "Pacific/Guam", "Pacific/Port_Moresby", "Asia/Vladivostok", "Asia/Magadan",
-  "Pacific/Fiji", "Pacific/Auckland"
-];
+const rolesOptions = store.state.rolesOptions;
+const timezoneOptions = store.state.timezoneOptions;
 
 const form = ref({
   username: "",
@@ -88,7 +62,7 @@ watch(
     if (newUser) {
       form.value = {
         username: newUser.username || "",
-        roles: [...(newUser.roles || [])], // Corrigido para garantir que um novo array seja criado
+        roles: [...(newUser.roles || [])],
         active: newUser.active ?? true,
         timezone: newUser.timezone || ""
       };
@@ -97,7 +71,6 @@ watch(
   { immediate: true }
 );
 
-// Alternar role entre selecionado e não selecionado
 const toggleRole = (role) => {
   const roles = new Set(form.value.roles);
   if (roles.has(role)) {
@@ -110,7 +83,7 @@ const toggleRole = (role) => {
 
 const confirmSave = async () => {
   if (isEditing.value) {
-    const confirmed = confirm("Tem certeza de que deseja salvar as alterações?");
+    const confirmed = confirm("Are you sure you want to save the changes?");
     if (!confirmed) return;
   }
   await saveUser();
@@ -118,9 +91,9 @@ const confirmSave = async () => {
 
 const saveUser = async () => {
   if (isEditing.value) {
-    await updateUser(props.user.id, form.value);
+    await store.dispatch('updateUser', { id: props.user.id, userData: form.value });
   } else {
-    await createUser(form.value);
+    await store.dispatch('createUser', form.value);
   }
   emit("save");
   emit("close");
