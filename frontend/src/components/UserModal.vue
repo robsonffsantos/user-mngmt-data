@@ -2,20 +2,33 @@
   <v-dialog v-model="dialog" persistent max-width="500px">
     <v-card>
       <v-card-title>
-        {{ isEditing ? "Editar Usuário" : "Criar Usuário" }}
+        {{ isEditing ? "Edit User" : "Create User" }}
       </v-card-title>
 
       <v-card-text>
         <v-text-field v-model="form.username" label="Username" required></v-text-field>
-        <v-text-field v-model="form.password" label="Password" type="password" required></v-text-field>
-        <v-select v-model="form.roles" label="Roles" :items="rolesOptions" multiple></v-select>
+
+        <p>Roles</p>
+        <v-row dense>
+          <v-col v-for="role in rolesOptions" :key="role" cols="4">
+            <v-btn
+              :color="form.roles.includes(role) ? 'primary' : 'grey'"
+              @click="toggleRole(role)"
+              block
+            >
+              {{ role }}
+            </v-btn>
+          </v-col>
+        </v-row>
+
         <v-switch v-model="form.active" label="Ativo?"></v-switch>
+
         <v-select v-model="form.timezone" label="Fuso Horário" :items="timezoneOptions"></v-select>
       </v-card-text>
 
       <v-card-actions>
         <v-btn @click="$emit('close')" color="grey">Cancelar</v-btn>
-        <v-btn @click="saveUser" color="primary">Salvar</v-btn>
+        <v-btn @click="confirmSave" color="primary">Salvar</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -23,13 +36,14 @@
 
 <script setup>
 import { ref, computed, defineProps, defineEmits, watch } from "vue";
+import { createUser, updateUser } from "../services/userService.js";
 
 const props = defineProps({ user: Object });
 const emit = defineEmits(["close", "save"]);
 
 const dialog = ref(true);
 
-const rolesOptions = ["admin", "manager", "tester", "active"];
+const rolesOptions = ["admin", "manager", "tester"];
 
 const timezoneOptions = [
   "Pacific/Midway", "Pacific/Pago_Pago", "Pacific/Honolulu", "America/Anchorage", 
@@ -61,7 +75,6 @@ const timezoneOptions = [
 
 const form = ref({
   username: "",
-  password: "",
   roles: [],
   active: true,
   timezone: ""
@@ -73,25 +86,42 @@ watch(
   () => props.user,
   (newUser) => {
     if (newUser) {
-      form.value = { ...newUser };
-      form.value.password = "";  // Clear password field when editing
+      form.value = {
+        username: newUser.username || "",
+        roles: [...(newUser.roles || [])], // Corrigido para garantir que um novo array seja criado
+        active: newUser.active ?? true,
+        timezone: newUser.timezone || ""
+      };
     }
   },
   { immediate: true }
 );
 
+// Alternar role entre selecionado e não selecionado
+const toggleRole = (role) => {
+  const roles = new Set(form.value.roles);
+  if (roles.has(role)) {
+    roles.delete(role);
+  } else {
+    roles.add(role);
+  }
+  form.value.roles = [...roles];
+};
+
+const confirmSave = async () => {
+  if (isEditing.value) {
+    const confirmed = confirm("Tem certeza de que deseja salvar as alterações?");
+    if (!confirmed) return;
+  }
+  await saveUser();
+};
+
 const saveUser = async () => {
-  const method = isEditing.value ? "PUT" : "POST";
-  const url = isEditing.value
-    ? `http://127.0.0.1:5000/users/${props.user.id}`
-    : "http://127.0.0.1:5000/users";
-
-  await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(form.value)
-  });
-
+  if (isEditing.value) {
+    await updateUser(props.user.id, form.value);
+  } else {
+    await createUser(form.value);
+  }
   emit("save");
   emit("close");
 };
