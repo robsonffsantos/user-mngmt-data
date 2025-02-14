@@ -51,12 +51,12 @@ const openEditModal = () => {
 const formatTimestamp = store.getters.formatTimestamp;
 
 const formattedRoles = computed(() => {
-  if (!user.value || !Array.isArray(user.value.roles)) return '';
+  if (!user.value || !Array.isArray(user.value.roles)) return 'User';
   const allowedRoles = ["admin", "manager", "tester"];
-  return user.value.roles
+  const roles = user.value.roles
     .filter(role => allowedRoles.includes(role.toLowerCase()))
-    .map(role => role.charAt(0).toUpperCase() + role.slice(1))
-    .join(", ");
+    .map(role => role.charAt(0).toUpperCase() + role.slice(1));
+  return roles.length ? roles.join(", ") : "User";
 });
 
 onMounted(fetchUser);
